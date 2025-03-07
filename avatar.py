@@ -4,7 +4,7 @@ import os
 import random
 from threading import Thread
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5.QtCore import QTimer, Qt, QPoint
 
 
@@ -41,7 +41,7 @@ class FloatingImage(QWidget):
 
         # Chargement de l'image
         self.label = QLabel(self)
-        pixmap = QPixmap("avatar.png")
+        pixmap = QPixmap("avatar_mouv1.png")
         if pixmap.isNull():
             print("Erreur : Impossible de charger avatar.png")
         self.label.setPixmap(pixmap)
@@ -186,7 +186,7 @@ class FloatingImage(QWidget):
             current_time = time.time()
             if current_time - self.last_flight_toggle_time > 10:  # Attendre au moins 10 sec avant un changement
                 if self.flying:  # Si elle vole déjà
-                    if current_time - self.last_flight_toggle_time > 60:  # Vol max de 1 min
+                    if current_time - self.last_flight_toggle_time > 30:  # Vol max de 1 min
                         self.flying = False
                         self.moving_up = self.moving_down = False  # Arrêter les déplacements verticaux
                         self.last_flight_toggle_time = current_time
@@ -211,6 +211,12 @@ class FloatingImage(QWidget):
                 x -= self.current_speed
             if self.moving_right:
                 x += self.current_speed
+
+            if self.moving_right:
+                self.label.setPixmap(
+                    QPixmap("avatar_mouv1.png").transformed(QTransform().scale(-1, 1)))  # Retourne l'image
+            elif self.moving_left:
+                self.label.setPixmap(QPixmap("avatar_mouv1.png"))  # Remet l'image normale
 
 
             self.move(int(x), int(y))
